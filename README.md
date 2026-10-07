@@ -1,7 +1,7 @@
 # Design and Analysis of Algorithms Lab (ENCA301 / ENCA351)
 
 K.R. Mangalam University — Aditya Shibu (2401201047), BCA (AI & DS) Sec B.
-Submitted to Dr. Aarti Sangwan (Lab 1) / Dr. Aarti (Lab 2, Capstone).
+Submitted to Dr. Aarti Sangwan.
 
 One folder per assignment. Every assignment folder is flat: code plus
 report source (`.md`), submission PDF, `screenshots/`, `graphs/`, and

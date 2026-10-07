@@ -1,7 +1,7 @@
 # Capstone - Smart City Traffic Management and Route Optimization (ENCA351)
 
 K.R. Mangalam University, School of Engineering and Technology.
-Aditya Shibu (2401201047), BCA (AI & DS) Sec B. Faculty: Dr. Aarti.
+Aditya Shibu (2401201047), BCA (AI & DS) Sec B. Faculty: Dr. Aarti Sangwan.
 
 Road network modeled as a weighted graph. Modules: Dijkstra route planning,
 Bellman-Ford congestion analysis, BFS/DFS connectivity, Prim/Kruskal MST.

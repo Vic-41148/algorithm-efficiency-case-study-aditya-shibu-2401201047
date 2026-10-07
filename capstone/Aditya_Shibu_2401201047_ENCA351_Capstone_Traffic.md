@@ -12,7 +12,7 @@
 <table class="front">
 <tr>
 <td><strong>Submitted by:</strong><br>Name: Aditya Shibu<br>Roll Number: 2401201047<br>Course: BCA (AI & DS) - Section B</td>
-<td style="text-align: right;"><strong>Submitted To:</strong><br>Dr. Aarti<br>Faculty, SOET</td>
+<td style="text-align: right;"><strong>Submitted To:</strong><br>Dr. Aarti Sangwan<br>Faculty, SOET</td>
 </tr>
 </table>
 

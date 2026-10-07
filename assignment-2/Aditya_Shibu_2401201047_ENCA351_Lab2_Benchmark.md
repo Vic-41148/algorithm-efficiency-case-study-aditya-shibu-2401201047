@@ -12,7 +12,7 @@
 <table class="front">
 <tr>
 <td><strong>Submitted by:</strong><br>Name: Aditya Shibu<br>Roll Number: 2401201047<br>Course: BCA (AI & DS) - Section B</td>
-<td style="text-align: right;"><strong>Submitted To:</strong><br>Dr. Aarti<br>Faculty, SOET</td>
+<td style="text-align: right;"><strong>Submitted To:</strong><br>Dr. Aarti Sangwan<br>Faculty, SOET</td>
 </tr>
 </table>
 
@@ -299,14 +299,38 @@ memory stays flat (0.09KB) - time, not space, is the wall.
 
 ## 4. Complexity table
 
-| Algorithm / Pattern | Best | Average | Worst | Space |
+| Algorithm / Pattern | Theoretical time + space | Observed time (measured) | Observed memory | Growth trend |
 |---|---|---|---|---|
-| Linear Search | O(1) | O(n) | O(n) | O(1) |
-| Binary Search | O(1) | O(log n) | O(log n) | O(1) |
-| Single Loop | O(n) | O(n) | O(n) | O(1) |
-| Nested Loop | O(n^2) | O(n^2) | O(n^2) | O(1) |
-| Factorial (Recursive) | O(n) | O(n) | O(n) | O(n) |
-| Factorial (Iterative) | O(n) | O(n) | O(n) | O(1) |
+| Linear Search | O(n), O(1) | 6µs → 5.1ms (n=100 → 50k) | 0.07–0.16KB, flat | linear |
+| Binary Search | O(log n), O(1) | 1–6µs, flat | 0.02–0.18KB, flat | logarithmic |
+| Single Loop | O(n), O(1) | 5µs → 2.3ms | flat | linear |
+| Nested Loop | O(n^2), O(1) | 0.26ms → 302s | 0.09KB, flat | quadratic |
+| Factorial (Recursive) | O(n), O(n) | 57µs → 2.6ms (n=100 → 900) | 0.2 → 17.8KB | linear, capped below 1000 |
+| Factorial (Iterative) | O(n), O(1) | 22µs → 0.26ms (n=100 → 1000) | 0.2 → 2.3KB | linear |
+
+Each row read against measurement:
+
+- Linear Search: best O(1) on a first-element hit, O(n) otherwise.
+  Measured comparisons track n exactly (51, 501, 5001, 25001 present;
+  n absent) and time grows 6 microseconds to 5 milliseconds. Textbook linear.
+- Binary Search: best O(1) on a middle hit, O(log n) otherwise. Measured
+  6, 9, 13, 15 comparisons while n grows 500x, time flat at 1-6
+  microseconds. Logarithmic confirmed; price is sorted input.
+- Single Loop: O(n) in every case. Measured 5 microseconds to 2.3
+  milliseconds tracking n, memory flat. Linear and lean.
+- Nested Loop: O(n^2) everywhere. The ratio column against single loop
+  runs 52x, 949x, 10034x, 129195x; at 50k it takes 302 seconds while
+  memory stays 0.09KB. Quadratic time with constant space: time, not
+  space, is the wall.
+- Factorial (Recursive): O(n) time, O(n) stack space. At n=500 it is
+  8x slower and 8x more memory than iterative with identical results,
+  and n=1000 exceeds the default recursion limit, so 900 is the max measured.
+- Factorial (Iterative): O(n) time, O(1) space. Fastest everywhere
+  measured (0.26 milliseconds at n=1000); the default choice.
+
+Growth trends: linear rows climb with n, the binary row stays flat, and
+the nested row explodes - exactly the fan-out the log-scale time chart
+in Sec. 5 shows.
 
 ## 5. Visualizations
 
@@ -338,8 +362,6 @@ Measure before deploying: binary search for sorted data, iterative
 factorial always, and never nest loops over large inputs. The engine,
 notebook, and app reuse the same measurement path, so every number in
 this report regenerates from one command.
-
-<div style="page-break-before: always;"></div>
 
 ## 8. How to reproduce
 

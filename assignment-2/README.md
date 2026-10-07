@@ -1,7 +1,7 @@
 # Lab 2 - Algorithm Performance Measurement and Benchmarking Tool (ENCA351)
 
 K.R. Mangalam University, School of Engineering and Technology.
-Aditya Shibu (2401201047), BCA (AI & DS) Sec B. Faculty: Dr. Aarti.
+Aditya Shibu (2401201047), BCA (AI & DS) Sec B. Faculty: Dr. Aarti Sangwan.
 
 A reusable benchmarking tool (time via `time.perf_counter`, memory via
 `tracemalloc`) applied to Linear/Binary Search and four code patterns
