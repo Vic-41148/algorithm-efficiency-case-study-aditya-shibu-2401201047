@@ -29,7 +29,7 @@ its own `README.md`.
     ├── README.md requirements.txt
     ├── app.py route_planner.py traffic_analysis.py connectivity_module.py
     ├── mst_planner.py run_experiments.py make_plots.py project_notebook.ipynb
-    ├── Aditya_Shibu_2401201047_ENCA351_Capstone_Traffic.md/.pdf (13 pp)
+    ├── Aditya_Shibu_2401201047_ENCA351_Capstone_Traffic.md/.pdf (17 pp)
     └── graphs/ data/ screenshots/
 ```
 
@@ -43,10 +43,10 @@ used, and its own `README.md` + `requirements.txt`.
 |---|---|---|
 | Lab 1 | `assignment-1/Lab1_Aditya_Shibu_2401201047.pdf` (+ complexity, experimental-analysis, graphs pieces) | 46 |
 | Lab 2 | `assignment-2/Aditya_Shibu_2401201047_ENCA351_Lab2_Benchmark.pdf` | 11 |
-| Capstone | `capstone/Aditya_Shibu_2401201047_ENCA351_Capstone_Traffic.pdf` | 13 |
+| Capstone | `capstone/Aditya_Shibu_2401201047_ENCA351_Capstone_Traffic.pdf` | 17 |
 
-All PDFs verify clean (`tools/verify_pdf.py`: zero blank/short pages) and
-were checked page by page against the Lab 1 reference formatting.
+All PDFs verify clean (ASSIGN-MAKER `tools/verify_pdf.py`: zero blank/short
+pages) and were checked page by page against the Lab 1 reference formatting.
 
 ## Run
 

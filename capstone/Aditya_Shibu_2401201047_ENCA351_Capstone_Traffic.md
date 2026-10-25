@@ -7,6 +7,7 @@
 <h3>School of Engineering and Technology</h3>
 <h3>SMART CITY TRAFFIC MANAGEMENT AND ROUTE OPTIMIZATION SYSTEM</h3>
 <p>Program: BCA (AI & DS)<br>Course Code - ENCA351 (2026-27)</p>
+<p>GitHub: <a href="https://github.com/Vic-41148/algorithm-efficiency-case-study-aditya-shibu-2401201047">algorithm-efficiency-case-study-aditya-shibu-2401201047</a></p>
 </div>
 
 <table class="front">
@@ -16,9 +17,9 @@
 </tr>
 </table>
 
-<div style="page-break-before: always;"></div>
+<style>pre { font-size: 10px; } table { font-size: 12.5px; break-inside: avoid; } th, td { padding: 5px 10px; } table.front, table.front td { border: none; } img[src*="screenshots/app_"] { max-height: 380px; }</style>
 
-<style>pre { font-size: 10px; } table { font-size: 12.5px; break-inside: avoid; } th, td { padding: 5px 10px; } table.front, table.front td { border: none; }</style>
+<div style="page-break-before: always;"></div>
 
 ## 1. Introduction
 
@@ -36,6 +37,16 @@ This project builds such a system: a 10-intersection sample city plus
 four modules (route planning with Dijkstra, congestion analysis with
 Bellman-Ford, BFS/DFS connectivity, Prim/Kruskal MST), scaling runs on
 10 to 100 intersections, and an interactive Streamlit app.
+
+Work is delivered against the five capstone phases:
+
+| Phase | Deliverable | Where |
+|---|---|---|
+| 1 | Project setup and road network modeling | 2.1, repository layout |
+| 2 | Route planning and traffic analysis | 2.2, 2.3, 4.2 |
+| 3 | Network connectivity analysis | 2.4 |
+| 4 | Infrastructure planning and comparison | 2.5, 2.6, 4.3 |
+| 5 | Interface, visualization, report | 3, 4, 5, 6 |
 
 <div style="page-break-before: always;"></div>
 
@@ -91,6 +102,8 @@ class RoadNetwork:
         return nodes, mat
 ```
 
+Sample city adjacency list (excerpt):
+
 ```text
 Library: [('Park', 3), ('Station', 4)]
 Market: [('Mall', 4), ('Park', 2), ('Stadium', 5), ('Station', 6)]
@@ -98,11 +111,15 @@ Market: [('Mall', 4), ('Park', 2), ('Stadium', 5), ('Station', 6)]
 
 ![sample city: Library to Airport shortest path, cost 13](graphs/city_shortest_path.png)
 
+<div style="page-break-before: always;"></div>
+
 ### 2.2 Route planning (Dijkstra)
 
 A commuter enters source and destination; the system settles intersections
 in order of current-best distance and returns the shortest route, its cost,
 and the settle trace.
+
+![terminal: adjacency list plus Dijkstra trace](screenshots/shot_route.png)
 
 route_planner.py (Dijkstra):
 
@@ -143,13 +160,13 @@ Library(0), Park(3), Station(4), Market(5), Hospital(9), Mall(9),
 Museum(10), Stadium(10), University(12), Airport(13) and returns
 Library -> Park -> Market -> Mall -> Airport, cost 13 (3+2+4+4).
 
-![terminal: adjacency list plus Dijkstra trace](screenshots/shot_route.png)
-
 ### 2.3 Traffic analysis (Bellman-Ford plus congestion)
 
 Administrators scale selected road weights to simulate jams, then
 recompute. Bellman-Ford relaxes every road each round and reports
 per-round relaxation counts plus negative-cycle status.
+
+![terminal: Bellman-Ford distances plus congestion compare](screenshots/shot_traffic.png)
 
 traffic_analysis.py (Bellman-Ford):
 
@@ -207,7 +224,7 @@ def compare_routes(network, source, dest, congested_edges, factor):
             "delta": c1 - c0, "rerouted": p0 != p1}
 ```
 
-![terminal: Bellman-Ford distances plus congestion compare](screenshots/shot_traffic.png)
+<div style="page-break-before: always;"></div>
 
 ### 2.4 Connectivity (BFS plus DFS)
 
@@ -259,6 +276,8 @@ def dfs(network, start):
 
 Both MST builders run on the same network and must agree; on the sample
 city both select 9 roads totaling 33.
+
+![sample city MST, total 33](graphs/city_mst.png)
 
 mst_planner.py (UnionFind plus builders):
 
@@ -319,61 +338,117 @@ def kruskal(network):
     return sorted(edges), total
 ```
 
-![sample city MST, total 33](graphs/city_mst.png)
+### 2.6 Complexity comparison
 
-## 3. Experiments
+| Algorithm | Time | Space | Basis |
+|---|---|---|---|
+| Graph build (list) | O(V + E) | O(V + E) | one entry per road |
+| Graph build (matrix) | O(V^2) | O(V^2) | every cell initialised |
+| Dijkstra | O((V + E) log V) | O(V + E) | binary heap of frontier nodes |
+| Bellman-Ford | O(V * E) | O(V) | V-1 sweeps over all roads |
+| BFS | O(V + E) | O(V) | queue and visited set |
+| DFS | O(V + E) | O(V) | stack and visited set |
+| Prim | O(E log V) | O(V + E) | heap of frontier edges |
+| Kruskal | O(E log E) | O(V + E) | sort dominates, union-find near constant |
+
+The measured curves in section 4 track these bounds: traversal grows
+linearly, Dijkstra stays close to linear at these sparse densities, and
+Bellman-Ford widens fastest because each of its V-1 sweeps touches every
+road.
+
+<div style="page-break-before: always;"></div>
+
+## 3. Interactive application
+
+app.py is a Streamlit front end over the same modules: four tabs, node
+pickers, a congestion factor slider, and result tables. It builds the sample
+city from route_planner.py, so the numbers in the interface match the
+terminal runs.
+
+![Streamlit route tab: Library to Airport, cost 13](screenshots/app_route.png)
+
+The route tab returns the path and cost. The traffic tab compares original
+and congested routes after jammed roads are selected. The connectivity tab
+prints BFS and DFS orders with the reachable count. The infrastructure tab
+shows the MST edge table and both totals, so a disagreement would be visible
+immediately.
+
+Run the app:
+
+```bash
+streamlit run app.py
+```
+
+<div style="page-break-before: always;"></div>
+
+## 4. Experiments
 
 Seeded random connected cities (spanning tree plus n/2 extra roads),
 best of 5 runs, time plus peak memory.
 
 | Intersections | Roads | BFS (s) | DFS (s) | Dijkstra (s) | Bellman-Ford (s) | Prim (s) | Kruskal (s) |
 |---|---|---|---|---|---|---|---|
-| 10 | 11 | 0.000005 | 0.000006 | 0.000012 | 0.000035 | 0.000015 | 0.000015 |
-| 25 | 36 | 0.000011 | 0.000013 | 0.000033 | 0.000113 | 0.000036 | 0.000036 |
-| 50 | 72 | 0.000020 | 0.000024 | 0.000045 | 0.000307 | 0.000073 | 0.000069 |
-| 100 | 148 | 0.000041 | 0.000047 | 0.000058 | 0.000626 | 0.000155 | 0.000141 |
+| 10 | 11 | 0.000006 | 0.000006 | 0.000011 | 0.000033 | 0.000015 | 0.000015 |
+| 25 | 36 | 0.000012 | 0.000013 | 0.000033 | 0.000109 | 0.000036 | 0.000036 |
+| 50 | 72 | 0.000022 | 0.000026 | 0.000046 | 0.000314 | 0.000074 | 0.000070 |
+| 100 | 148 | 0.000042 | 0.000049 | 0.000059 | 0.000634 | 0.000160 | 0.000144 |
+
+Peak memory in KB, same runs:
+
+| Intersections | BFS | DFS | Dijkstra | Bellman-Ford | Prim | Kruskal |
+|---|---|---|---|---|---|---|
+| 10 | 1.641 | 0.930 | 1.398 | 1.547 | 1.039 | 1.711 |
+| 25 | 3.578 | 3.086 | 4.570 | 4.789 | 3.242 | 4.781 |
+| 50 | 3.578 | 3.086 | 6.422 | 6.805 | 3.492 | 6.531 |
+| 100 | 11.938 | 11.398 | 7.867 | 18.211 | 12.180 | 17.477 |
 
 Cross-checks at every size: Prim total equals Kruskal total
 (61, 189, 362, 731), Dijkstra cost equals Bellman-Ford cost
 (13, 24, 27, 21).
 
-### 3.1 BFS vs DFS
+<div style="page-break-before: always;"></div>
+
+### 4.1 BFS vs DFS
 
 | Size | BFS (s) | DFS (s) | Observation |
 |---|---|---|---|
-| 10 | 0.000005 | 0.000006 | level order vs depth order, same reach |
-| 25 | 0.000011 | 0.000013 | gap under 2 microseconds |
-| 50 | 0.000020 | 0.000024 | linear in nodes plus roads |
-| 100 | 0.000041 | 0.000047 | DFS ~15 percent slower (stack churn) |
+| 10 | 0.000006 | 0.000006 | level order vs depth order, same reach |
+| 25 | 0.000012 | 0.000013 | gap under 2 microseconds |
+| 50 | 0.000022 | 0.000026 | linear in nodes plus roads |
+| 100 | 0.000042 | 0.000049 | DFS ~17 percent slower (stack churn) |
 
-### 3.2 Dijkstra vs Bellman-Ford
+### 4.2 Dijkstra vs Bellman-Ford
 
 | Size | Dijkstra (s) | Bellman-Ford (s) | Ratio |
 |---|---|---|---|
-| 10 | 0.000012 | 0.000035 | 2.9x |
-| 25 | 0.000033 | 0.000113 | 3.4x |
-| 50 | 0.000045 | 0.000307 | 6.8x |
-| 100 | 0.000058 | 0.000626 | 10.8x |
+| 10 | 0.000011 | 0.000033 | 3.0x |
+| 25 | 0.000033 | 0.000109 | 3.3x |
+| 50 | 0.000046 | 0.000314 | 6.8x |
+| 100 | 0.000059 | 0.000634 | 10.7x |
 
 Heap selection beats full relaxation sweeps, and the gap widens with
 size. Costs agree everywhere, so Bellman-Ford doubles as the congestion
 checker while Dijkstra answers live queries.
 
-### 3.3 Prim vs Kruskal
+<div style="page-break-before: always;"></div>
+
+### 4.3 Prim vs Kruskal
 
 | Size | Prim (s) | Kruskal (s) | MST total |
 |---|---|---|---|
 | 10 | 0.000015 | 0.000015 | 61 |
 | 25 | 0.000036 | 0.000036 | 189 |
-| 50 | 0.000073 | 0.000069 | 362 |
-| 100 | 0.000155 | 0.000141 | 731 |
+| 50 | 0.000074 | 0.000070 | 362 |
+| 100 | 0.000160 | 0.000144 | 731 |
 
 Effectively tied; edge totals identical, so either builder is safe and
 the pair cross-validates the result.
 
 ![scaling of all six algorithms with network size](graphs/scaling.png)
 
-## 4. Analysis
+<div style="page-break-before: always;"></div>
+
+## 5. Analysis
 
 Dijkstra suits live routing (fastest single-source queries, no negative
 weights on roads). Bellman-Ford suits congestion analysis (tolerates
@@ -385,24 +460,29 @@ Kruskal are interchangeable here - run both and require agreement.
 Time-space view: traversal is linear in nodes plus roads with tiny
 memory; Dijkstra costs a heap; Bellman-Ford costs repeated sweeps;
 MST builders cost a heap or a sort plus near-constant union-find.
-Nothing in the measured range exceeds 19KB peak.
+Peak memory stays below 19KB in every run, reaching 18.2KB at 100
+intersections for Bellman-Ford, whose distance and predecessor maps
+dominate.
 
-## 5. Conclusion
+## 6. Conclusion
 
 The system routes the sample city in 13 cost units, reroutes around
 simulated jams with a measured delta, reaches all 10 intersections from
 any start, and plans infrastructure for 33 units with two agreeing
 builders. Scaling runs confirm Dijkstra over Bellman-Ford for queries
-(~11x at 100 nodes) and Prim/Kruskal parity throughout. Next steps:
+(10.7x at 100 nodes) and Prim/Kruskal parity throughout. Next steps:
 one-way roads, live traffic feeds, and signal-timing optimization.
 
-## 6. How to reproduce
+<div style="page-break-before: always;"></div>
+
+## 7. How to reproduce
 
 ```bash
 python route_planner.py
 python traffic_analysis.py
 python connectivity_module.py
 python mst_planner.py
+streamlit run app.py
 ```
 
 Scaling experiments plus figures (run from this folder):
@@ -411,3 +491,6 @@ Scaling experiments plus figures (run from this folder):
 python run_experiments.py
 python make_plots.py
 ```
+
+Repository:
+https://github.com/Vic-41148/algorithm-efficiency-case-study-aditya-shibu-2401201047

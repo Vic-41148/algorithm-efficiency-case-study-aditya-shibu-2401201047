@@ -22,10 +22,10 @@ Bellman-Ford congestion analysis, BFS/DFS connectivity, Prim/Kruskal MST.
 ├── requirements.txt
 ├── krmu_logo.png           # report front page
 ├── Aditya_Shibu_2401201047_ENCA351_Capstone_Traffic.md  # report source
-├── Aditya_Shibu_2401201047_ENCA351_Capstone_Traffic.pdf # report (13 pp)
+├── Aditya_Shibu_2401201047_ENCA351_Capstone_Traffic.pdf # report (17 pp)
 ├── graphs/                 # city maps, scaling chart
 ├── data/                   # experiments.csv
-└── screenshots/            # terminal evidence
+└── screenshots/            # terminal runs and app screenshots
 ```
 
 ## Run
@@ -55,4 +55,4 @@ streamlit run app.py
 
 Full write-up with module code, experiment tables, figures, analysis,
 and conclusion:
-`Aditya_Shibu_2401201047_ENCA351_Capstone_Traffic.pdf` (13 pp, verified clean).
+`Aditya_Shibu_2401201047_ENCA351_Capstone_Traffic.pdf` (17 pp, verified clean).
