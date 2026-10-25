@@ -1,6 +1,6 @@
 # Design and Analysis of Algorithms Lab (ENCA301 / ENCA351)
 
-K.R. Mangalam University — Aditya Shibu (2401201047), BCA (AI & DS) Sec B.
+K.R. Mangalam University, Aditya Shibu (2401201047), BCA (AI & DS) Sec B.
 Submitted to Dr. Aarti Sangwan.
 
 One folder per assignment. Every assignment folder is flat: code plus
@@ -14,18 +14,25 @@ its own `README.md`.
 ├── README.md
 ├── LICENSE
 ├── requirements.txt      # shared env (venv/ is ignored)
-├── assignment-1/         # Lab 1: sorting + Fibonacci efficiency — done
+├── assignment-1/         # Lab 1: sorting + Fibonacci efficiency, done
 │   ├── README.md requirements.txt
 │   ├── algorithms/ analysis/ notebook/ graphs/ data/ screenshots/
 │   ├── image-57.png (report logo)
 │   └── Lab1_Aditya_Shibu_2401201047.md/.pdf + 3 submission pieces
-├── assignment-2/         # Lab 2: benchmarking tool — done
+├── assignment-2/         # Lab 2: benchmarking tool, done
 │   ├── README.md requirements.txt
 │   ├── app.py search_analysis.py code_benchmark.py benchmark_engine.py
 │   ├── run_full_sweep.py visualize.py project_notebook.ipynb
 │   ├── Aditya_Shibu_2401201047_ENCA351_Lab2_Benchmark.md/.pdf (11 pp)
 │   └── graphs/ data/ screenshots/
-└── capstone/             # Smart City Traffic — done
+├── assignment-3/         # Lab 3: smart allocation and scheduling, done
+│   ├── README.md requirements.txt
+│   ├── fractional_knapsack.py activity_selection.py huffman_coding.py
+│   ├── run_experiments.py make_plots.py
+│   ├── Aditya_Shibu_2401201047_ENCA351_Lab3.md/.pdf (20 pp)
+│   ├── Lab3_Performance_Complexity_...pdf (4 pp), Lab3_Graphs_Visualizations_...pdf (5 pp)
+│   └── graphs/ data/ screenshots/
+└── capstone/             # Smart City Traffic, done
     ├── README.md requirements.txt
     ├── app.py route_planner.py traffic_analysis.py connectivity_module.py
     ├── mst_planner.py run_experiments.py make_plots.py project_notebook.ipynb
@@ -43,6 +50,7 @@ used, and its own `README.md` + `requirements.txt`.
 |---|---|---|
 | Lab 1 | `assignment-1/Lab1_Aditya_Shibu_2401201047.pdf` (+ complexity, experimental-analysis, graphs pieces) | 46 |
 | Lab 2 | `assignment-2/Aditya_Shibu_2401201047_ENCA351_Lab2_Benchmark.pdf` | 11 |
+| Lab 3 | `assignment-3/Aditya_Shibu_2401201047_ENCA351_Lab3.pdf` (+ performance-complexity 4 pp, visualizations 5 pp) | 20 |
 | Capstone | `capstone/Aditya_Shibu_2401201047_ENCA351_Capstone_Traffic.pdf` | 17 |
 
 All PDFs verify clean (ASSIGN-MAKER `tools/verify_pdf.py`: zero blank/short
@@ -52,5 +60,6 @@ pages) and were checked page by page against the Lab 1 reference formatting.
 
 ```bash
 cd assignment-2 && python run_full_sweep.py all   # Lab 2 numbers
+cd ../assignment-3 && python run_experiments.py   # Lab 3 numbers
 cd ../capstone && python run_experiments.py       # capstone numbers
 ```
