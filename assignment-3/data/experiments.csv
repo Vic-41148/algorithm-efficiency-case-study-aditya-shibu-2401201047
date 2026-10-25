@@ -1,0 +1,22 @@
+algorithm,size,time_s,memory_kb
+Fractional Knapsack,100,0.000039,1.984
+Activity Selection,100,0.000009,1.281
+Huffman Coding,100,0.000227,21.263
+Fractional Knapsack,200,0.000138,7.688
+Activity Selection,200,0.000017,3.289
+Huffman Coding,200,0.000529,47.953
+Fractional Knapsack,500,0.000427,21.273
+Activity Selection,500,0.000045,11.852
+Huffman Coding,500,0.001481,114.222
+Fractional Knapsack,1000,0.000868,44.680
+Activity Selection,1000,0.000095,23.539
+Huffman Coding,1000,0.002926,229.250
+Fractional Knapsack,2000,0.001828,91.492
+Activity Selection,2000,0.000218,46.883
+Huffman Coding,2000,0.006116,460.272
+Fractional Knapsack,5000,0.004782,297.211
+Activity Selection,5000,0.000635,117.039
+Huffman Coding,5000,0.017974,1215.127
+Fractional Knapsack,10000,0.010914,749.875
+Activity Selection,10000,0.001302,234.508
+Huffman Coding,10000,0.040027,2385.069
