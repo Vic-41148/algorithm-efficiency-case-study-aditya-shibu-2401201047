@@ -32,6 +32,13 @@ its own `README.md`.
 │   ├── Aditya_Shibu_2401201047_ENCA351_Lab3.md/.pdf (20 pp)
 │   ├── Lab3_Performance_Complexity_...pdf (4 pp), Lab3_Graphs_Visualizations_...pdf (5 pp)
 │   └── graphs/ data/ screenshots/
+├── assignment-4/         # Lab 4: dynamic programming, done
+│   ├── README.md requirements.txt
+│   ├── lcs.py knapsack_dp.py matrix_chain.py
+│   ├── run_experiments.py make_plots.py
+│   ├── Aditya_Shibu_2401201047_ENCA351_Lab4.md/.pdf (18 pp)
+│   ├── Lab4_Performance_Complexity_...pdf (5 pp), Lab4_Graphs_Visualizations_...pdf (5 pp)
+│   └── graphs/ data/ screenshots/
 └── capstone/             # Smart City Traffic, done
     ├── README.md requirements.txt
     ├── app.py route_planner.py traffic_analysis.py connectivity_module.py
@@ -51,6 +58,7 @@ used, and its own `README.md` + `requirements.txt`.
 | Lab 1 | `assignment-1/Lab1_Aditya_Shibu_2401201047.pdf` (+ complexity, experimental-analysis, graphs pieces) | 46 |
 | Lab 2 | `assignment-2/Aditya_Shibu_2401201047_ENCA351_Lab2_Benchmark.pdf` | 11 |
 | Lab 3 | `assignment-3/Aditya_Shibu_2401201047_ENCA351_Lab3.pdf` (+ performance-complexity 4 pp, visualizations 5 pp) | 20 |
+| Lab 4 | `assignment-4/Aditya_Shibu_2401201047_ENCA351_Lab4.pdf` (+ performance-complexity 5 pp, visualizations 5 pp) | 18 |
 | Capstone | `capstone/Aditya_Shibu_2401201047_ENCA351_Capstone_Traffic.pdf` | 17 |
 
 All PDFs verify clean (ASSIGN-MAKER `tools/verify_pdf.py`: zero blank/short
@@ -61,5 +69,6 @@ pages) and were checked page by page against the Lab 1 reference formatting.
 ```bash
 cd assignment-2 && python run_full_sweep.py all   # Lab 2 numbers
 cd ../assignment-3 && python run_experiments.py   # Lab 3 numbers
+cd ../assignment-4 && python run_experiments.py   # Lab 4 numbers
 cd ../capstone && python run_experiments.py       # capstone numbers
 ```

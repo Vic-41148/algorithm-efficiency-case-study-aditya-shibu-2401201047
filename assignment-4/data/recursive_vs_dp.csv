@@ -1,0 +1,13 @@
+size,method,time_s,calls
+6,Naive recursion,0.000039,377
+6,DP table,0.000003,36
+8,Naive recursion,0.000141,1245
+8,DP table,0.000010,64
+10,Naive recursion,0.000290,3286
+10,DP table,0.000008,100
+12,Naive recursion,0.000744,8391
+12,DP table,0.000011,144
+14,Naive recursion,0.030577,350983
+14,DP table,0.000015,196
+16,Naive recursion,0.564067,6290326
+16,DP table,0.000018,256
