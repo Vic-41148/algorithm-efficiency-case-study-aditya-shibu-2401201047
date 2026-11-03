@@ -63,3 +63,29 @@ Full write-up with module code, experiment tables, figures, analysis,
 and conclusion:
 `Aditya_Shibu_2401201047_ENCA351_Capstone_Traffic.pdf` (25 pp, 17 images,
 verified clean).
+
+## Verification
+
+Build and check the report from this folder:
+
+```bash
+python3 /home/vic/Projects/ASSIGN-MAKER/tools/pipeline.py \
+  Aditya_Shibu_2401201047_ENCA351_Capstone_Traffic.md --require-github
+```
+
+Run the contract tests:
+
+```bash
+python3 -m unittest -v
+```
+
+Data provenance:
+
+- `data/experiments.csv` comes from `run_experiments.py` (10 to 200 nodes,
+  timing best of 7, memory median of 7 traced runs).
+- `data/congestion_scenarios.csv` comes from `run_scenarios.py`.
+- Report tables come from those CSV files; figures come from
+  `make_plots.py`.
+
+`run_experiments.py` and `run_scenarios.py` are import-safe; their `main()`
+runs only under `if __name__ == "__main__":`.
