@@ -1,0 +1,5 @@
+trip,jammed_roads,factor,original_route,original_cost,congested_route,congested_cost,delta,rerouted
+Library -> Airport,Market-Mall + Mall-Airport,3,Library -> Park -> Market -> Mall -> Airport,13,Library -> Park -> Market -> Stadium -> Airport,17,4,yes
+Library -> Airport,Library-Park,3,Library -> Park -> Market -> Mall -> Airport,13,Library -> Station -> Hospital -> University -> Airport,18,5,yes
+Library -> Airport,Park-Market,3,Library -> Park -> Market -> Mall -> Airport,13,Library -> Park -> Market -> Mall -> Airport,17,4,no
+Library -> Airport,Park-Museum,3,Library -> Park -> Market -> Mall -> Airport,13,Library -> Park -> Market -> Mall -> Airport,13,0,no

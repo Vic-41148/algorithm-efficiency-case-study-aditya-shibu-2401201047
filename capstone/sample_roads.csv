@@ -1,0 +1,15 @@
+from,to,weight
+Library,Station,4
+Library,Park,3
+Station,Hospital,5
+Station,Market,6
+Park,Market,2
+Park,Museum,7
+Hospital,University,3
+Hospital,Mall,8
+Market,Mall,4
+Market,Stadium,5
+Museum,Stadium,3
+University,Airport,6
+Mall,Airport,4
+Stadium,Airport,7

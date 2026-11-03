@@ -1,4 +1,4 @@
-import time, random, tracemalloc
+import time, random, statistics, tracemalloc
 # run from this folder: plain local imports
 from route_planner import RoadNetwork, dijkstra
 from traffic_analysis import bellman_ford
@@ -11,31 +11,37 @@ def random_city(n, seed=7):
     names = [f"N{i}" for i in range(n)]
     for i in range(1, n):
         g.add_road(names[i], names[rnd.randrange(i)], rnd.randint(1, 20))
-    for _ in range(n // 2):
+    target = n // 2
+    added, guard = 0, 0
+    while added < target and guard < target * 50:
+        guard += 1
         u, v = rnd.sample(names, 2)
         if v not in g.adj[u]:
             g.add_road(u, v, rnd.randint(1, 20))
+            added += 1
     return g, names
 
-def timed(func, *args, runs=5):
+def timed(func, *args, runs=7):
     ts, ms = [], []
     for _ in range(runs):
-        tracemalloc.start()
         t = time.perf_counter()
         out = func(*args)
-        dt = time.perf_counter() - t
+        ts.append(time.perf_counter() - t)
+    for _ in range(runs):
+        tracemalloc.start()
+        func(*args)
         _, peak = tracemalloc.get_traced_memory()
         tracemalloc.stop()
-        ts.append(dt); ms.append(peak / 1024)
-    return out, min(ts), min(ms)
+        ms.append(peak / 1024)
+    return out, min(ts), statistics.median(ms)
 
 print("size,roads,algo,time_s,mem_kb,extra")
 rows = []
-for n in (10, 25, 50, 100):
+for n in (10, 25, 50, 100, 150, 200):
     g, names = random_city(n)
     m = len(g.roads())
-    (_, _), tb, mb = timed(bfs, g, "N0")
-    (_, _), td, md = timed(dfs, g, "N0")
+    (_, _, _), tb, mb = timed(bfs, g, "N0")
+    (_, _, _), td, md = timed(dfs, g, "N0")
     (p, c, _), tj, mj = timed(dijkstra, g, "N0", f"N{n-1}")
     (d, pr, tr, ok), tb2, mb2 = timed(bellman_ford, g, "N0")
     (pe, pt), tp, mp = timed(prim, g)

@@ -1,4 +1,5 @@
 """Route planning module: road network model + Dijkstra with trace."""
+import csv
 import heapq
 
 
@@ -42,6 +43,25 @@ class RoadNetwork:
             mat[idx[u]][idx[v]] = w
             mat[idx[v]][idx[u]] = w
         return nodes, mat
+
+
+def load_network(source):
+    """Build a network from CSV rows with from, to and weight columns.
+
+    source may be a path or an open text file, such as io.StringIO.
+    """
+    if hasattr(source, "read"):
+        return _load_rows(source)
+    with open(source, newline="") as handle:
+        return _load_rows(handle)
+
+
+def _load_rows(handle):
+    network = RoadNetwork()
+    for row in csv.DictReader(handle):
+        network.add_road(row["from"].strip(), row["to"].strip(),
+                         int(row["weight"]))
+    return network
 
 
 def dijkstra(network, source, dest):
@@ -100,11 +120,22 @@ def build_sample_city():
 
 if __name__ == "__main__":
     city, _ = build_sample_city()
+    csv_city = load_network("sample_roads.csv")
+    print("CSV LOAD: sample_roads.csv ->",
+          len(csv_city.nodes()), "intersections,",
+          len(csv_city.roads()), "roads")
     print("NODES:", city.nodes())
     print("ROADS:", len(city.roads()))
     print("ADJACENCY LIST:")
     for u, nbrs in city.adjacency_list().items():
         print(f"  {u}: {nbrs}")
+    nodes, matrix = city.adjacency_matrix()
+    print("ADJACENCY MATRIX (0 = no road):")
+    print(f"{'':>11}" + "".join(f"{n[:4]:>5}" for n in nodes))
+    for n, row in zip(nodes, matrix):
+        print(f"{n:>11}" + "".join(f"{x:>5}" for x in row))
+    print(f"MATRIX: {len(nodes)} x {len(nodes)} = {len(nodes) ** 2} cells; "
+          f"list holds {2 * len(city.roads())} directed entries")
     path, cost, trace = dijkstra(city, "Library", "Airport")
     print(f"DIJKSTRA Library -> Airport: {' -> '.join(path)} cost={cost}")
     print("TRACE (settled node, distance):")

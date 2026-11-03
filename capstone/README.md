@@ -14,18 +14,21 @@ Bellman-Ford congestion analysis, BFS/DFS connectivity, Prim/Kruskal MST.
 ├── app.py                  # Streamlit app (4 module tabs)
 ├── route_planner.py        # graph model + Dijkstra
 ├── traffic_analysis.py     # Bellman-Ford + congestion compare
-├── connectivity_module.py  # BFS + DFS
+├── connectivity_module.py  # BFS + DFS, returns tree edges
 ├── mst_planner.py          # Prim + Kruskal
 ├── run_experiments.py      # scaling runs -> data/experiments.csv
-├── make_plots.py           # city map, MST map, scaling chart
+├── run_scenarios.py        # congestion cases -> data/congestion_scenarios.csv
+├── tests.py                # 10 unittest cases
+├── make_plots.py           # city map, trees, congestion, scaling chart
+├── sample_roads.csv        # CSV network (10 nodes, 14 roads)
 ├── project_notebook.ipynb  # demo notebook (executes clean)
 ├── requirements.txt
 ├── krmu_logo.png           # report front page
 ├── Aditya_Shibu_2401201047_ENCA351_Capstone_Traffic.md  # report source
-├── Aditya_Shibu_2401201047_ENCA351_Capstone_Traffic.pdf # report (17 pp)
-├── graphs/                 # city maps, scaling chart
-├── data/                   # experiments.csv
-└── screenshots/            # terminal runs and app screenshots
+├── Aditya_Shibu_2401201047_ENCA351_Capstone_Traffic.pdf # report (25 pp)
+├── graphs/                 # city maps, BFS/DFS trees, congestion, scaling
+├── data/                   # experiments.csv, congestion_scenarios.csv
+└── screenshots/            # terminal runs, matrix, tests, app tabs
 ```
 
 ## Run
@@ -36,7 +39,9 @@ python traffic_analysis.py
 python connectivity_module.py
 python mst_planner.py
 python run_experiments.py
+python run_scenarios.py
 python make_plots.py
+python -m unittest -v
 streamlit run app.py
 ```
 
@@ -49,10 +54,12 @@ streamlit run app.py
 | `connectivity_module.py` | Task 6 BFS/DFS connectivity |
 | `mst_planner.py` | Task 7 Prim/Kruskal infrastructure |
 | `run_experiments.py` + `make_plots.py` | Task 8 scaling runs + Task 9 figures |
+| `run_scenarios.py` + `tests.py` | congestion scenarios + 10 contract tests |
 | `app.py` | interactive app (Tasks 2-7) |
 
 ## Report
 
 Full write-up with module code, experiment tables, figures, analysis,
 and conclusion:
-`Aditya_Shibu_2401201047_ENCA351_Capstone_Traffic.pdf` (17 pp, verified clean).
+`Aditya_Shibu_2401201047_ENCA351_Capstone_Traffic.pdf` (25 pp, 17 images,
+verified clean).

@@ -42,8 +42,9 @@ its own `README.md`.
 └── capstone/             # Smart City Traffic, done
     ├── README.md requirements.txt
     ├── app.py route_planner.py traffic_analysis.py connectivity_module.py
-    ├── mst_planner.py run_experiments.py make_plots.py project_notebook.ipynb
-    ├── Aditya_Shibu_2401201047_ENCA351_Capstone_Traffic.md/.pdf (17 pp)
+    ├── mst_planner.py run_experiments.py run_scenarios.py tests.py
+    ├── make_plots.py sample_roads.csv project_notebook.ipynb
+    ├── Aditya_Shibu_2401201047_ENCA351_Capstone_Traffic.md/.pdf (25 pp)
     └── graphs/ data/ screenshots/
 ```
 
@@ -59,7 +60,7 @@ used, and its own `README.md` + `requirements.txt`.
 | Lab 2 | `assignment-2/Aditya_Shibu_2401201047_ENCA351_Lab2_Benchmark.pdf` | 11 |
 | Lab 3 | `assignment-3/Aditya_Shibu_2401201047_ENCA351_Lab3.pdf` (+ performance-complexity 4 pp, visualizations 5 pp) | 20 |
 | Lab 4 | `assignment-4/Aditya_Shibu_2401201047_ENCA351_Lab4.pdf` (+ performance-complexity 5 pp, visualizations 5 pp) | 18 |
-| Capstone | `capstone/Aditya_Shibu_2401201047_ENCA351_Capstone_Traffic.pdf` | 17 |
+| Capstone | `capstone/Aditya_Shibu_2401201047_ENCA351_Capstone_Traffic.pdf` | 25 |
 
 All PDFs verify clean (ASSIGN-MAKER `tools/verify_pdf.py`: zero blank/short
 pages) and were checked page by page against the Lab 1 reference formatting.
