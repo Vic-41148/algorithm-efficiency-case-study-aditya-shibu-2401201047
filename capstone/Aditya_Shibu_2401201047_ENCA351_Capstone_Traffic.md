@@ -38,6 +38,23 @@ four modules (route planning with Dijkstra, congestion analysis with
 Bellman-Ford, BFS/DFS connectivity, Prim/Kruskal MST), scaling runs on
 10 to 200 intersections, 10 unit tests, and an interactive Streamlit app.
 
+**Problem.** The city has fixed intersections and roads, but no single tool
+that finds the cheapest route, shows which zones remain reachable after a
+closure, and plans the cheapest set of links that keeps every zone
+connected. Planners need those answers on one shared road model, with the
+cost of each decision visible.
+
+**Design overview.** All modules share `RoadNetwork` from `route_planner.py`.
+`traffic_analysis.py` reuses that graph for Bellman-Ford and jam scaling,
+`connectivity_module.py` traverses its adjacency list, `mst_planner.py`
+consumes its roads, `run_experiments.py` drives every module on seeded
+graphs, and `app.py` exposes the same functions as four tabs.
+
+**Environment setup.** Python 3.10 or newer. From the capstone folder:
+`python -m venv .venv`, `source .venv/bin/activate`, then
+`pip install -r requirements.txt` (streamlit, pandas, matplotlib, networkx,
+numpy, jupyter).
+
 Work is delivered against the five capstone phases:
 
 | Phase | Deliverable | Where |
@@ -216,9 +233,10 @@ def bellman_ford(network, source):
     prev = {}
     dist[source] = 0
     trace = []
+    edges = network.roads()
     for i in range(len(nodes) - 1):
         changed = 0
-        for u, v, w in network.roads():
+        for u, v, w in edges:
             for a, b in ((u, v), (v, u)):
                 if dist[a] + w < dist[b]:
                     dist[b] = dist[a] + w
@@ -228,7 +246,7 @@ def bellman_ford(network, source):
         if changed == 0:
             break
     ok = True
-    for u, v, w in network.roads():
+    for u, v, w in edges:
         for a, b in ((u, v), (v, u)):
             if dist[a] + w < dist[b]:
                 ok = False
@@ -429,16 +447,17 @@ def kruskal(network):
 | Graph build (list) | O(V + E) | O(V + E) | one entry per road |
 | Graph build (matrix) | O(V^2) | O(V^2) | every cell initialised |
 | Dijkstra | O((V + E) log V) | O(V + E) | binary heap of frontier nodes |
-| Bellman-Ford | O(V * E) | O(V) | V-1 sweeps over all roads |
+| Bellman-Ford | O(V×E) | O(V) | V-1 sweeps over all roads |
 | BFS | O(V + E) | O(V) | queue and visited set |
 | DFS | O(V + E) | O(V) | stack and visited set |
 | Prim | O(E log V) | O(V + E) | heap of frontier edges |
 | Kruskal | O(E log E) | O(V + E) | sort dominates, union-find near constant |
 
-The measured curves and observed exponents in section 4 track these
-bounds: traversal sits near linear, Dijkstra and Prim near 1.1, and
-Bellman-Ford widens fastest because each sweep touches every road, even
-though its early exit stops well before V-1 rounds.
+The measured curves and observed exponents in section 4 are close to
+linear: traversal is 0.88 to 0.89 from 10 to 200 (about 1.0 from 50 to 200),
+Dijkstra 1.03, Bellman-Ford 1.00, Prim 1.00, and Kruskal 0.91. Bellman-Ford
+keeps a V×E worst case, but the one-time edge list and early exit keep these
+runs far below it.
 
 <div style="page-break-before: always;"></div>
 
@@ -482,50 +501,50 @@ streamlit run app.py
 
 Seeded random connected cities with a spanning tree plus exactly n/2
 unique extra roads; duplicate draws are retried until the count is reached.
-Timing is the best of 7 runs. Memory is the median peak of 7 separate runs,
+Timing is the best of 25 runs. Memory is the median peak of 7 separate runs,
 measured with tracemalloc outside the timer, so tracing overhead does not
 inflate the times.
 
 | Intersections | Roads | BFS (s) | DFS (s) | Dijkstra (s) | Bellman-Ford (s) | Prim (s) | Kruskal (s) |
 |---|---|---|---|---|---|---|---|
-| 10 | 14 | 0.000002 | 0.000003 | 0.000004 | 0.000017 | 0.000004 | 0.000008 |
-| 25 | 36 | 0.000005 | 0.000007 | 0.000012 | 0.000054 | 0.000012 | 0.000020 |
-| 50 | 74 | 0.000010 | 0.000014 | 0.000018 | 0.000158 | 0.000026 | 0.000045 |
-| 100 | 149 | 0.000020 | 0.000029 | 0.000025 | 0.000318 | 0.000062 | 0.000088 |
-| 150 | 224 | 0.000034 | 0.000045 | 0.000046 | 0.000507 | 0.000096 | 0.000150 |
-| 200 | 299 | 0.000044 | 0.000063 | 0.000116 | 0.000673 | 0.000134 | 0.000194 |
+| 10 | 14 | 0.000006 | 0.000009 | 0.000011 | 0.000031 | 0.000013 | 0.000026 |
+| 25 | 36 | 0.000016 | 0.000022 | 0.000036 | 0.000077 | 0.000028 | 0.000050 |
+| 50 | 74 | 0.000023 | 0.000031 | 0.000039 | 0.000162 | 0.000055 | 0.000094 |
+| 100 | 149 | 0.000043 | 0.000062 | 0.000053 | 0.000329 | 0.000125 | 0.000191 |
+| 150 | 224 | 0.000068 | 0.000092 | 0.000096 | 0.000506 | 0.000193 | 0.000306 |
+| 200 | 299 | 0.000092 | 0.000128 | 0.000253 | 0.000673 | 0.000288 | 0.000420 |
 
 Peak memory in KB, median of 7 traced runs:
 
 | Intersections | BFS | DFS | Dijkstra | Bellman-Ford | Prim | Kruskal |
 |---|---|---|---|---|---|---|
-| 10 | 1.77 | 1.02 | 1.35 | 1.55 | 1.10 | 1.66 |
-| 25 | 3.77 | 3.27 | 4.55 | 4.79 | 3.24 | 4.65 |
-| 50 | 3.83 | 3.40 | 6.40 | 6.82 | 3.49 | 6.44 |
-| 100 | 12.53 | 11.99 | 7.84 | 18.19 | 12.18 | 17.41 |
-| 150 | 12.41 | 12.12 | 12.15 | 20.42 | 12.71 | 18.23 |
-| 200 | 13.17 | 12.40 | 27.43 | 28.76 | 13.21 | 25.77 |
+| 10 | 1.77 | 1.02 | 1.35 | 1.31 | 1.10 | 1.51 |
+| 25 | 3.77 | 3.27 | 4.55 | 4.01 | 3.24 | 4.62 |
+| 50 | 3.83 | 3.40 | 6.40 | 5.27 | 3.49 | 6.44 |
+| 100 | 12.53 | 11.99 | 7.84 | 14.94 | 12.18 | 17.41 |
+| 150 | 12.41 | 12.12 | 12.15 | 17.34 | 12.71 | 18.23 |
+| 200 | 13.17 | 12.40 | 27.43 | 23.25 | 13.21 | 25.77 |
 
 Cross-checks at every size: Prim total equals Kruskal total
 (57, 189, 355, 731, 1049, 1442), Dijkstra cost equals Bellman-Ford cost
 (13, 24, 27, 21, 26, 49).
 
 Peak memory stays below 30 KB. BFS and DFS end near 13 KB at 200 nodes;
-Dijkstra and Bellman-Ford reach 27.4 and 28.8 KB because their distance and
-predecessor maps dominate. The small 25 to 50 node BFS step (3.77 to 3.83
-KB) is allocator noise; these are median peaks and sub-kilobyte differences
-do not survive reruns.
+Dijkstra reaches 27.4 KB because its heap and distance maps dominate, while
+Bellman-Ford stays at 23.3 KB after reusing one edge list across rounds. The
+small 25 to 50 node BFS step (3.77 to 3.83 KB) is allocator noise; these are
+median peaks and sub-kilobyte differences do not survive reruns.
 
 ### 4.1 BFS vs DFS
 
 | Size | BFS (s) | DFS (s) | Observation |
 |---|---|---|---|
-| 10 | 0.000002 | 0.000003 | level order vs depth order, same reach |
-| 25 | 0.000005 | 0.000007 | gap about 2 microseconds |
-| 50 | 0.000010 | 0.000014 | linear in nodes plus roads |
-| 100 | 0.000020 | 0.000029 | DFS about 45 percent slower |
-| 150 | 0.000034 | 0.000045 | same gap, more nodes |
-| 200 | 0.000044 | 0.000063 | DFS about 43 percent slower |
+| 10 | 0.000006 | 0.000009 | level order vs depth order, same reach |
+| 25 | 0.000016 | 0.000022 | DFS about 6 microseconds slower |
+| 50 | 0.000023 | 0.000031 | linear in nodes plus roads |
+| 100 | 0.000043 | 0.000062 | DFS about 44 percent slower |
+| 150 | 0.000068 | 0.000092 | same gap, more nodes |
+| 200 | 0.000092 | 0.000128 | DFS about 39 percent slower |
 
 Both are linear; DFS carries a larger constant because the stack stores
 parent pairs and the order reverses neighbour lists.
@@ -534,37 +553,41 @@ parent pairs and the order reverses neighbour lists.
 
 | Size | Dijkstra (s) | Bellman-Ford (s) | Ratio |
 |---|---|---|---|
-| 10 | 0.000004 | 0.000017 | 4.3x |
-| 25 | 0.000012 | 0.000054 | 4.7x |
-| 50 | 0.000018 | 0.000158 | 8.7x |
-| 100 | 0.000025 | 0.000318 | 12.7x |
-| 150 | 0.000046 | 0.000507 | 11.1x |
-| 200 | 0.000116 | 0.000673 | 5.8x |
+| 10 | 0.000011 | 0.000031 | 2.9x |
+| 25 | 0.000036 | 0.000077 | 2.2x |
+| 50 | 0.000039 | 0.000162 | 4.2x |
+| 100 | 0.000053 | 0.000329 | 6.2x |
+| 150 | 0.000096 | 0.000506 | 5.2x |
+| 200 | 0.000253 | 0.000673 | 2.7x |
 
-Dijkstra is faster at every size. The ratio peaks at 12.7x at 100 nodes and
-falls to 5.8x at 200, where the single seeded graph gives Dijkstra a longer
+Dijkstra is faster at every size. The ratio peaks at 6.2x at 100 nodes and
+falls to 2.7x at 200, where the single seeded graph gives Dijkstra a longer
 destination path and more heap work. The observed exponent is the more
-stable comparison: 1.11 for Dijkstra and 1.21 for Bellman-Ford.
+stable comparison: 1.03 for Dijkstra and 1.00 for Bellman-Ford.
 
-Bellman-Ford is also far below its V*E bound. From 10 to 200 nodes, V grows
-20x and E grows 21.4x, so V*E grows about 428x, but measured time grows
-about 40x. The early exit (`if changed == 0: break`) stops after 4 rounds on
-these graphs, so the worst case is never reached.
+Bellman-Ford is also far below its V×E bound. From 10 to 200 nodes, V grows
+20x and E grows 21.4x, so V×E grows about 428x, but measured time grows
+about 22x. On the generated graphs the early exit (`if changed == 0: break`)
+stops after 2 rounds at 10 nodes, 3 at 25, and 5 at 50 to 200; the sample
+city needs 4. The V-1 bound is never reached.
 
 ### 4.3 Prim vs Kruskal
 
 | Size | Prim (s) | Kruskal (s) | MST total |
 |---|---|---|---|
-| 10 | 0.000004 | 0.000008 | 57 |
-| 25 | 0.000012 | 0.000020 | 189 |
-| 50 | 0.000026 | 0.000045 | 355 |
-| 100 | 0.000062 | 0.000088 | 731 |
-| 150 | 0.000096 | 0.000150 | 1049 |
-| 200 | 0.000134 | 0.000194 | 1442 |
+| 10 | 0.000013 | 0.000026 | 57 |
+| 25 | 0.000028 | 0.000050 | 189 |
+| 50 | 0.000055 | 0.000094 | 355 |
+| 100 | 0.000125 | 0.000191 | 731 |
+| 150 | 0.000193 | 0.000306 | 1049 |
+| 200 | 0.000288 | 0.000420 | 1442 |
 
-Prim is faster here at every size (1.4x to 2x) because the heap frontier is
-smaller than a full sort of all roads. Totals are identical, so either
-builder is safe and the pair cross-validates the result.
+Prim is faster here at every size (about 1.5x to 2x) because the heap
+frontier is smaller than a full sort of all roads. Totals are identical, so
+either builder is safe and the pair cross-validates the result. The textbook
+rule says Kruskal is better on sparse graphs, but at these sizes Python's
+union-find constants and the edge sort dominate, so Prim wins; the gap
+narrows as n grows.
 
 ![scaling of all six algorithms from 10 to 200 intersections](graphs/scaling.png)
 
@@ -577,17 +600,19 @@ Ratios use the unrounded CSV values:
 
 | Algorithm | 10 nodes (s) | 200 nodes (s) | Time ratio | Observed k |
 |---|---|---|---|---|
-| BFS | 0.000002 | 0.000044 | 19.7x | 0.97 |
-| DFS | 0.000003 | 0.000063 | 21.9x | 1.01 |
-| Dijkstra | 0.000004 | 0.000116 | 30.3x | 1.11 |
-| Bellman-Ford | 0.000017 | 0.000673 | 40.4x | 1.21 |
-| Prim | 0.000004 | 0.000134 | 30.8x | 1.12 |
-| Kruskal | 0.000008 | 0.000194 | 23.1x | 1.03 |
+| BFS | 0.000006 | 0.000092 | 15.5x | 0.89 |
+| DFS | 0.000009 | 0.000128 | 15.0x | 0.88 |
+| Dijkstra | 0.000011 | 0.000253 | 23.3x | 1.03 |
+| Bellman-Ford | 0.000031 | 0.000673 | 21.5x | 1.00 |
+| Prim | 0.000013 | 0.000288 | 21.5x | 1.00 |
+| Kruskal | 0.000026 | 0.000420 | 16.2x | 0.91 |
 
-Traversal sits at 0.97 to 1.01, close to linear. Dijkstra and Prim are near
-1.1, Kruskal 1.03, and Bellman-Ford 1.21. All are far below the worst-case
-exponents because the graphs are sparse and Bellman-Ford exits early.
-Microsecond timings still carry noise, so the second decimal is indicative.
+Traversal sits at 0.88 to 0.89, below 1 because the 10-node baseline carries
+fixed call overhead; from 50 to 200 nodes traversal k is about 0.99 to 1.02.
+Dijkstra is 1.03, Bellman-Ford 1.00, Prim 1.00, and Kruskal 0.91. All are
+near linear on these sparse graphs, and Bellman-Ford's V×E worst case is not
+reached because it exits after at most 5 rounds. Microsecond timings still
+carry noise, so the second decimal is indicative.
 
 <div style="page-break-before: always;"></div>
 
@@ -618,27 +643,35 @@ Run them with `python -m unittest -v`. All 10 pass.
 
 Dijkstra suits live routing: fastest single-source queries and no negative
 weights on roads. Bellman-Ford is used here as an independent cross-check
-on every Dijkstra result and would be required if weights could go negative
-(for example toll credits). Its round trace shows how many relaxation passes
-were needed before distances settled. BFS maps zones level by level for
-monitoring; DFS explores deep branches first for accessibility sweeps. Prim
-and Kruskal are interchangeable here - run both and require agreement.
+on every Dijkstra result. Its negative-cycle check also matters if one-way
+roads later carry negative weights, such as toll credits; on the current
+undirected network a negative road is itself a negative cycle, so
+Bellman-Ford reports a cycle rather than a route. Its round trace shows how
+many relaxation passes were needed before distances settled. BFS maps zones
+level by level for monitoring; DFS explores deep branches first for
+accessibility sweeps. Prim and Kruskal are interchangeable here - run both
+and require agreement.
 
 Time-space view: traversal is linear in nodes plus roads with tiny memory;
-Dijkstra costs a heap; Bellman-Ford costs repeated sweeps; MST builders cost
-a heap or a sort plus near-constant union-find. Peak memory stays below 30KB
-in every run, reaching 28.8KB at 200 intersections for Bellman-Ford, whose
-distance and predecessor maps dominate.
+Dijkstra costs a heap; Bellman-Ford costs repeated sweeps, though the early
+exit keeps it to at most 5 rounds here; MST builders cost a heap or a sort
+plus near-constant union-find. Peak memory stays below 30KB in every run,
+reaching 27.4KB at 200 intersections for Dijkstra; Bellman-Ford stays at
+23.3KB after reusing one edge list across rounds.
 
 ## 7. Limitations
 
 - Weights are static. There is no live traffic feed.
-- Roads are undirected; one-way streets are not modeled.
+- Roads are undirected; one-way streets are not modeled. Negative weights
+  such as toll credits are therefore out of scope: one negative road would
+  already form a negative cycle on an undirected graph.
 - Scaling uses synthetic random graphs, not measured traffic counts.
 - Microsecond timings are noisy; medians reduce but do not remove the
   noise.
 - Every run used one machine and one Python version, so absolute times
   will differ elsewhere.
+
+<div style="page-break-before: always;"></div>
 
 ## 8. Conclusion
 
@@ -647,10 +680,14 @@ simulated jams to 17, reaches all 10 intersections from any start, and
 plans infrastructure for 33 units with two agreeing builders. Scaling runs
 from 10 to 200 intersections show Dijkstra faster than Bellman-Ford at
 every size, near-linear traversal, and Prim/Kruskal parity. Ten unit tests
-cover the same contracts. Next steps: one-way roads, live traffic feeds,
-and signal-timing optimization.
+cover the same contracts.
 
-<div style="page-break-before: always;"></div>
+For city planners: use Dijkstra with a periodic Bellman-Ford cross-check for
+live routing; build the MST with Prim and verify with Kruskal for the
+cheapest connected maintenance plan; reroute around a jam only when the
+alternative is cheaper, otherwise keep the existing path and avoid
+unnecessary churn. Next steps: one-way roads, live traffic feeds, and
+signal-timing optimization.
 
 ## 9. How to reproduce
 

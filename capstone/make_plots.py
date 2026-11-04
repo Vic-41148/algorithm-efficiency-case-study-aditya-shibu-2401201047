@@ -28,7 +28,7 @@ def draw(highlight, title, out):
     for n, (x, y) in coords.items():
         plt.scatter([x], [y], s=260, c="steelblue", zorder=2)
         plt.text(x, y + 0.28, n, fontsize=9, ha="center", weight="bold")
-    plt.title(title)
+    plt.title(title, pad=15)
     plt.axis("equal")
     plt.axis("off")
     plt.tight_layout()
@@ -59,7 +59,7 @@ def draw_tree(tree, order, title, out, color):
                     linewidths=2, zorder=4)
         plt.text(x, y + 0.32, f"{n} (#{visit[n]})", fontsize=9,
                  ha="center", weight="bold", zorder=5)
-    plt.title(title)
+    plt.title(title, pad=15)
     plt.axis("equal")
     plt.axis("off")
     plt.tight_layout()
@@ -96,7 +96,7 @@ def draw_congestion(result, jammed, factor, out):
                        linewidths=1.5, zorder=5)
             ax.text(x, y + 0.3, n, fontsize=8.5, ha="center",
                     weight="bold", zorder=6)
-        ax.set_title(f"{label}: cost {cost}")
+        ax.set_title(f"{label}: cost {cost}", pad=12)
         ax.axis("equal")
         ax.axis("off")
     fig.text(0.5, 0.02, f"Orange dashed: jammed roads, weight x{factor}. "
@@ -127,7 +127,7 @@ for algo in ("BFS", "DFS", "Dijkstra", "Bellman-Ford", "Prim", "Kruskal"):
     plt.plot(sizes, ts, marker="o", label=algo)
 plt.xlabel("Intersections (n)")
 plt.ylabel("Execution Time (seconds)")
-plt.title("Scaling: all algorithms vs network size")
+plt.title("Scaling: all algorithms vs network size", pad=12)
 plt.legend()
 plt.grid(True)
 plt.savefig(G + "scaling.png", dpi=150)

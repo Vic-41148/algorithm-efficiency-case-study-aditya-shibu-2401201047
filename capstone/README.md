@@ -31,6 +31,14 @@ Bellman-Ford congestion analysis, BFS/DFS connectivity, Prim/Kruskal MST.
 └── screenshots/            # terminal runs, matrix, tests, app tabs
 ```
 
+## Setup
+
+```bash
+python -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+```
+
 ## Run
 
 ```bash
@@ -82,7 +90,7 @@ python3 -m unittest -v
 Data provenance:
 
 - `data/experiments.csv` comes from `run_experiments.py` (10 to 200 nodes,
-  timing best of 7, memory median of 7 traced runs).
+  timing best of 25 runs, memory median of 7 traced runs).
 - `data/congestion_scenarios.csv` comes from `run_scenarios.py`.
 - Report tables come from those CSV files; figures come from
   `make_plots.py`.

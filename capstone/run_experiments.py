@@ -26,13 +26,13 @@ def random_city(n, seed=7):
     assert added == target, f"wanted {target} extra roads, added {added}"
     return g, names
 
-def timed(func, *args, runs=7):
+def timed(func, *args, time_runs=25, mem_runs=7):
     ts, ms = [], []
-    for _ in range(runs):
+    for _ in range(time_runs):
         t = time.perf_counter()
         out = func(*args)
         ts.append(time.perf_counter() - t)
-    for _ in range(runs):
+    for _ in range(mem_runs):
         tracemalloc.start()
         func(*args)
         _, peak = tracemalloc.get_traced_memory()
@@ -56,7 +56,8 @@ def main():
         assert c == d[f"N{n-1}"], "Dijkstra/BF disagree"
         for algo, t, mm, ex in (("BFS", tb, mb, "-"), ("DFS", td, md, "-"),
                                 ("Dijkstra", tj, mj, f"cost={c}"),
-                                ("Bellman-Ford", tb2, mb2, f"cost={d[f'N{n-1}']}"),
+                                ("Bellman-Ford", tb2, mb2,
+                                 f"cost={d[f'N{n-1}']},rounds={len(tr)}"),
                                 ("Prim", tp, mp, f"mst={pt}"),
                                 ("Kruskal", tk, mk, f"mst={kt}")):
             print(f"{n},{m},{algo},{t:.6f},{mm:.2f},{ex}")

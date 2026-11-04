@@ -10,9 +10,10 @@ def bellman_ford(network, source):
     prev = {}
     dist[source] = 0
     trace = []
+    edges = network.roads()
     for i in range(len(nodes) - 1):
         changed = 0
-        for u, v, w in network.roads():
+        for u, v, w in edges:
             for a, b in ((u, v), (v, u)):
                 if dist[a] + w < dist[b]:
                     dist[b] = dist[a] + w
@@ -22,7 +23,7 @@ def bellman_ford(network, source):
         if changed == 0:
             break
     ok = True
-    for u, v, w in network.roads():
+    for u, v, w in edges:
         for a, b in ((u, v), (v, u)):
             if dist[a] + w < dist[b]:
                 ok = False
