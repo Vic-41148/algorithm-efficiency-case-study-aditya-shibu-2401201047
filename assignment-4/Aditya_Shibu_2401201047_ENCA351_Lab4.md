@@ -5,8 +5,8 @@
 <div style="text-align: center;">
 <h1>K.R. Mangalam University</h1>
 <h3>School of Engineering and Technology</h3>
-<h3>LAB 4 DYNAMIC PROGRAMMING REPORT</h3>
-<p>Program: BCA (AI & DS) - Section B<br>Course Code - ENCA351 (2026-27)</p>
+<h3>Lab Name: Lab 4 - Dynamic Programming</h3>
+<p>Program: BCA (AI & DS)<br>Specialisation: AI & DS<br>Section: B<br>Course Code - ENCA351 (2026-27)</p>
 <p>GitHub: <a href="https://github.com/Vic-41148/algorithm-efficiency-case-study-aditya-shibu-2401201047">https://github.com/Vic-41148/algorithm-efficiency-case-study-aditya-shibu-2401201047</a></p>
 </div>
 
@@ -32,6 +32,11 @@ table stores each state once, which turns repeated work into a lookup.
 This lab applies the pattern to three problems, measures time, memory and
 the number of states, and compares a naive recursion with the table version.
 
+**Task.** Implement LCS, 0/1 knapsack, and matrix chain multiplication with
+dynamic programming; measure execution time, peak memory, and subproblem
+counts; compare naive recursion with the table; and visualize the DP tables,
+optimization results, and scaling behaviour.
+
 | Problem | State | Section |
 |---|---|---|
 | Longest Common Subsequence | table cell (i, j) for prefixes | 2.1 |
@@ -56,11 +61,9 @@ Objectives:
 4. Draw the DP tables and the runtime curves.
 5. Compare naive recursion with the table on the same LCS inputs.
 
-The workspace is one flat folder: `lcs.py`, `knapsack_dp.py` and
-`matrix_chain.py` hold one algorithm each; `run_experiments.py` writes
-`data/experiments.csv` and `data/recursive_vs_dp.csv`; `make_plots.py`
-writes the figures to `graphs/`. Terminal evidence is stored in
-`screenshots/`, and `requirements.txt` lists the plotting package.
+Flat workspace: one algorithm per file (`lcs.py`, `knapsack_dp.py`,
+`matrix_chain.py`); `run_experiments.py` writes the CSVs and `make_plots.py`
+writes the figures.
 
 <div style="page-break-before: always;"></div>
 
@@ -178,7 +181,12 @@ by that item's weight. Time and space are O(nC). The one-row variant scans
 capacity backwards, which keeps each item from being reused and reduces space
 to O(C).
 
-![terminal: 0/1 knapsack sample, chosen set and one-row check](screenshots/shot_knapsack.png)
+The demo uses six items and capacity 15, so the table is 7 by 16. The run
+prints every row, which shows the construction: row i is the best value
+using the first i items, and each cell is the better of skipping the item or
+taking it and adding the value from the row above at the reduced capacity.
+
+![terminal: 0/1 knapsack demo table, chosen set and one-row check](screenshots/shot_knapsack.png)
 
 ```python
 """0/1 Knapsack, bottom-up table plus a one-row space optimisation.
@@ -188,6 +196,10 @@ so the run is O(n * capacity) time and space. The one-row version keeps
 O(capacity) space by scanning the capacity backwards.
 """
 import random
+
+DEMO_ITEMS = [("map", 10, 5), ("compass", 40, 4), ("water", 30, 6),
+              ("tent", 50, 9), ("food", 35, 5), ("radio", 25, 3)]
+DEMO_CAPACITY = 15
 
 
 def knapsack_dp(items, capacity):
@@ -229,30 +241,33 @@ def make_items(n, seed=29, max_value=100, max_weight=100):
 
 
 if __name__ == "__main__":
-    items = [("map", 10, 5), ("compass", 40, 4), ("water", 30, 6),
-             ("tent", 50, 9), ("food", 35, 5), ("radio", 25, 3)]
-    capacity = 15
+    items = DEMO_ITEMS
+    capacity = DEMO_CAPACITY
     best, table, chosen = knapsack_dp(items, capacity)
     print(f"capacity={capacity} items={len(items)}")
     print(f"best value={best} chosen={chosen}")
     print(f"one-row check={knapsack_1d(items, capacity)}")
     print(f"table rows={len(table)} cols={len(table[0])}")
+    print("table:")
+    for row in table:
+        print(" ".join(f"{cell:4d}" for cell in row))
 ```
 
 ### 2.3 Matrix Chain Multiplication
 
-Multiplying a chain of matrices does not change the result order, but the
-number of scalar multiplications depends heavily on where the parentheses
-go. For matrices i to j, the cost is the best split k of the cost of the left
+The grouping does not change the resulting matrix, but the number of scalar
+multiplications depends heavily on where the parentheses go. For matrices i
+to j, the cost is the best split k of the cost of the left
 part plus the cost of the right part plus the cost of joining the two results.
 Intervals are processed by increasing length so both parts are ready before
 the parent interval is computed.
 
 The cost table is n by n and only the upper triangle is used, which is
 n(n+1)/2 states. Each state tries every split, so time is O(n^3) and space is
-O(n^2). The split table rebuilds the optimal parenthesization.
+O(n^2). The split table stores the best k for each interval, so the run
+prints both tables: the cost table and the 0-indexed split table.
 
-![terminal: matrix chain cost, order and cost table](screenshots/shot_mcm.png)
+![terminal: matrix chain cost, order, cost table and split table](screenshots/shot_mcm.png)
 
 ```python
 """Matrix Chain Multiplication, interval DP.
@@ -302,9 +317,35 @@ if __name__ == "__main__":
     print(f"dims={dims}")
     print(f"matrices={len(dims) - 1} min cost={best}")
     print(f"order={parenthesize(split, 0, len(dims) - 2)}")
+    print("cost table:")
     for row in cost:
         print(" ".join(f"{cell:8.0f}" for cell in row))
+    print("split table (0-indexed k):")
+    for row in split:
+        print(" ".join(f"{cell:2d}" for cell in row))
 ```
+
+The demo run prints both tables. The cost table is:
+
+```text
+      0   24000   14000   26000
+      0       0    6000   12000
+      0       0       0    9000
+      0       0       0       0
+```
+
+The 0-indexed split table shows the best k for every interval:
+
+```text
+ 0  0  0  2
+ 0  0  1  2
+ 0  0  0  2
+ 0  0  0  0
+```
+
+Entry [0][3]=2 splits the chain into M1..M3 and M4. Entry [0][2]=0 splits
+M1..M3 into M1 and M2..M3. Entry [1][2]=1 splits M2 from M3. Together they
+give ((M1 x (M2 x M3)) x M4).
 
 <div style="page-break-before: always;"></div>
 
@@ -312,9 +353,9 @@ if __name__ == "__main__":
 
 | Problem | Time | Space | Distinct states |
 |---|---|---|---|
-| LCS | O(mn) | O(mn) | m n |
-| 0/1 Knapsack | O(nC) | O(nC), O(C) with one row | n C |
-| Matrix Chain | O(n^3) | O(n^2) | n(n+1)/2 |
+| LCS | O(mn) | O(mn) | (m+1)(n+1) cells, m n non-trivial |
+| 0/1 Knapsack | O(nC) | O(nC), O(C) with one row | (n+1)(C+1) cells, n C non-trivial |
+| Matrix Chain | O(n^3) | O(n^2) | n(n+1)/2 intervals |
 
 The three bounds differ in what drives them. LCS depends on two string
 lengths, knapsack on the item count and the numeric capacity, and matrix
@@ -322,10 +363,13 @@ chain on the number of matrices. That difference explains why the experiment
 ranges are not the same for all three.
 
 - **LCS.** Each of the (m+1)(n+1) cells does constant work, so time is O(mn);
-  the table is the same size, so space is O(mn). Rebuilding the subsequence
-  walks at most m+n cells, which is lower order. Keeping only the previous
-  row reduces space to O(min(m,n)) when only the length is needed.
-- **0/1 Knapsack.** The table has n(C+1) cells and each cell compares two
+  the table is the same size, so space is O(mn). Only the m n interior cells
+  carry a match decision, so the experiment tables count those: 2,500 at
+  n=50 out of a full 51 by 51 table of 2,601 cells, and 256 at n=16 out of a
+  full 17 by 17 table of 289 cells. Rebuilding the subsequence walks at most
+  m+n cells, which is lower order. Keeping only the previous row reduces
+  space to O(min(m,n)) when only the length is needed.
+- **0/1 Knapsack.** The table has (n+1)(C+1) cells and each cell compares two
   values, so time and space are O(nC). This is called pseudopolynomial: C is
   a number, not the length of the input, so a large capacity with few items
   is still expensive. The experiments set C=2n, which turns the bound into
@@ -335,17 +379,109 @@ ranges are not the same for all three.
   splits, so time is O(n^3); the cost and split tables are n by n, so space
   is O(n^2). Rebuilding the parentheses follows one split per interval.
 
-Memory follows the table in every case, which is why the memory chart has the
-same slopes as the time chart. The absolute sizes differ: at the largest
-tested point LCS stores 1.44 million cells and peaks at 17.8 MB, knapsack
-stores 1.28 million cells at 17.8 MB, and matrix chain stores 12,880 cost
-cells at 0.81 MB. Matrix chain is the only one where time, not memory, is the
-practical limit at these sizes.
+Memory follows the table, not the running time. LCS and knapsack are
+quadratic in n, so time and memory grow together. Matrix chain is the
+exception: time is cubic while its cost and split tables are quadratic, so
+memory grows more slowly. At the largest tested point LCS peaks at 17,805
+KiB, knapsack at 17,755 KiB, and matrix chain at 810.51 KiB. Matrix chain
+would hit a time limit first as n grows, because its time bound is a full
+degree above its memory bound.
 
-The measured curves follow these exponents: doubling the matrix chain size
-multiplies time by about 8, doubling the knapsack size by about 4, and a 1.5
-times larger LCS input by about 2.4. Section 4.5 compares the factors with
-the table.
+The curves follow these exponents: doubling matrix chain multiplies time by
+about 8 but memory by 4; doubling knapsack multiplies both by 4; a 1.5 times
+larger LCS input multiplies time by 2.44 and memory by 2.60. Sections 3.1 to
+3.3 compare the measured factors with the bounds.
+
+### 2.5 Interactive menu
+
+`app.py` wraps the three modules in a small menu, so the input can be changed
+without editing a file. Option 1 reads two strings and prints the LCS length,
+the subsequence and the table, plus the recursive call count when both
+strings are at most 20 characters. Option 2 fixes the
+demo items, reads a capacity and prints the best value, the chosen set, the
+one-row check and the table. Option 3 reads a list of dimensions and prints
+the minimum cost, the parenthesization and the split table. Option 4 exits.
+
+![terminal: interactive menu solving the matrix chain demo](screenshots/shot_app.png)
+
+```python
+"""Small interactive menu for the three Lab 4 dynamic programs."""
+from knapsack_dp import DEMO_CAPACITY, DEMO_ITEMS, knapsack_1d, knapsack_dp
+from lcs import lcs_recursive, lcs_string, lcs_table
+from matrix_chain import matrix_chain, parenthesize
+
+
+def run_lcs():
+    a = input("First string [AGGTAB]: ").strip() or "AGGTAB"
+    b = input("Second string [GXTXAYB]: ").strip() or "GXTXAYB"
+    table = lcs_table(a, b)
+    print(f"length={table[-1][-1]} string={lcs_string(a, b)}")
+    if max(len(a), len(b)) <= 20:
+        _, calls = lcs_recursive(a, b)
+        print(f"recursive_calls={calls}")
+    else:
+        print("naive recursion skipped above length 20")
+    print("table:")
+    for row in table:
+        print(" ".join(f"{cell:2d}" for cell in row))
+
+
+def run_knapsack():
+    print(f"demo items={DEMO_ITEMS}")
+    raw = input(f"Capacity [{DEMO_CAPACITY}]: ").strip()
+    try:
+        capacity = int(raw) if raw else DEMO_CAPACITY
+    except ValueError:
+        print("Capacity must be an integer")
+        return
+    if capacity < 0:
+        print("Capacity must be zero or more")
+        return
+    best, table, chosen = knapsack_dp(DEMO_ITEMS, capacity)
+    print(f"best value={best} chosen={chosen}")
+    print(f"one-row check={knapsack_1d(DEMO_ITEMS, capacity)}")
+    print("table:")
+    for row in table:
+        print(" ".join(f"{cell:4d}" for cell in row))
+
+
+def run_matrix_chain():
+    raw = input("Dimensions [40 20 30 10 30]: ").strip()
+    try:
+        dims = [int(part) for part in (raw or "40 20 30 10 30").split()]
+    except ValueError:
+        print("Dimensions must be integers")
+        return
+    if len(dims) < 2:
+        print("Need at least two dimensions")
+        return
+    best, _, split = matrix_chain(dims)
+    print(f"min cost={best} order={parenthesize(split, 0, len(dims) - 2)}")
+    print("split table:")
+    for row in split:
+        print(" ".join(f"{cell:2d}" for cell in row))
+
+
+def main():
+    while True:
+        print("\n1 LCS\n2 0/1 Knapsack\n3 Matrix Chain\n4 Quit")
+        choice = input("Choice: ").strip().lower()
+        if choice == "1":
+            run_lcs()
+        elif choice == "2":
+            run_knapsack()
+        elif choice == "3":
+            run_matrix_chain()
+        elif choice in ("4", "q", "quit"):
+            print("Bye")
+            return
+        else:
+            print("Choose 1 to 4")
+
+
+if __name__ == "__main__":
+    main()
+```
 
 ## 3. Experiments
 
@@ -353,7 +489,8 @@ Runs use Python 3.14 on Linux. Time comes from `time.perf_counter` with
 `tracemalloc` off, so the clock is not inflated by allocation tracking.
 Memory comes from separate runs with `tracemalloc` on. Timing points are the
 median of five runs, memory points the median of three. Inputs are generated
-before timing with fixed seeds.
+before timing with fixed seeds. Memory is reported in KiB (1 KiB = 1024
+bytes); the scripts label the same unit KB.
 
 Sizes: LCS strings of length 50 to 1200, knapsack items 50 to 800 with
 capacity 2n, matrix chains 10 to 160 matrices.
@@ -362,7 +499,7 @@ capacity 2n, matrix chains 10 to 160 matrices.
 
 ### 3.1 Longest Common Subsequence
 
-| n | Time (s) | Peak memory (KB) | Subproblems |
+| n | Time (s) | Peak memory (KiB) | Subproblems |
 |---|---|---|---|
 | 50 | 0.000175 | 20.73 | 2,500 |
 | 100 | 0.000758 | 81.81 | 10,000 |
@@ -371,13 +508,16 @@ capacity 2n, matrix chains 10 to 160 matrices.
 | 800 | 0.064863 | 6860.08 | 640,000 |
 | 1200 | 0.158299 | 17805.52 | 1,440,000 |
 
-Quadrupling n (400 to 800) multiplies time by 4.8 and memory by 5.4, close
-to the quadratic prediction of 16. From 800 to 1200, a 1.5 times larger input,
-time grows 2.4 times and memory 2.6 times, against 2.25 expected.
+Doubling n (400 to 800) multiplies time by 4.8, close to the quadratic
+prediction of 4. Memory grows 5.4 times, above 4, because values above 256
+start to allocate int objects (Section 4.5). From 800 to 1200, a 1.5 times
+larger input, time grows 2.4 times and memory 2.6 times, against 2.25
+expected. The small time overshoot may come from CPU-cache misses, but that
+is not measured.
 
 ### 3.2 0/1 Knapsack
 
-| n | Time (s) | Peak memory (KB) | Subproblems |
+| n | Time (s) | Peak memory (KiB) | Subproblems |
 |---|---|---|---|
 | 50 | 0.000263 | 46.34 | 5,000 |
 | 100 | 0.001420 | 246.77 | 20,000 |
@@ -392,7 +532,7 @@ the same number of states.
 
 ### 3.3 Matrix Chain Multiplication
 
-| n | Time (s) | Peak memory (KB) | Subproblems |
+| n | Time (s) | Peak memory (KiB) | Subproblems |
 |---|---|---|---|
 | 10 | 0.000024 | 1.82 | 55 |
 | 20 | 0.000171 | 9.56 | 210 |
@@ -404,11 +544,14 @@ the same number of states.
 Doubling n from 80 to 160 multiplies time by 7.8, close to the cubic
 prediction of 8, and memory by 4.0, which matches the quadratic table.
 
+<div style="page-break-before: always;"></div>
+
 ### 3.4 Scaling charts
 
 The runtime chart is log-log. LCS and knapsack are close to a slope of two,
-matrix chain is closer to three. Memory follows the same pattern because the
-table size sets both.
+matrix chain is closer to three. Memory is quadratic for all three, because
+only the table is stored: matrix chain keeps an n by n table, so its memory
+slope stays near two even though its time slope is near three.
 
 ![execution time vs problem size](graphs/runtime_dp.png)
 
@@ -428,20 +571,25 @@ Same random strings, naive recursion against the table:
 | 16 | 0.564067 | 6,290,326 | 0.000018 | 31,337x |
 
 At n=16 the recursion makes 6.29 million calls while the table fills 256
-cells. The speedup grows with n because the number of repeated states grows
-faster than the table.
+non-trivial cells. The counts here use seed 37 from `run_experiments.py`, so
+they differ from the fixed demo strings printed by `lcs.py`. The jump at
+n=14 is not an error: random strings have different match structure, so call
+counts can rise unevenly. The speedup grows with n because the number of
+repeated states grows faster than the table.
 
 ![LCS: naive recursion vs DP table](graphs/recursive_vs_dp.png)
 
 ### 3.6 DP table heatmaps
 
-The LCS table for AGGTAB and GXTXAYB has length 4. The highlighted diagonal
-steps are the matches that build the subsequence GTAB.
+The LCS table for AGGTAB and GXTXAYB has length 4. The longest common
+subsequence is GTAB, rebuilt from the bottom-right cell by the usual
+match-and-step rule.
 
 ![LCS table heatmap](graphs/lcs_heatmap.png)
 
-The knapsack table shows the best value for each item prefix and capacity.
-The value rises in steps as items start to fit.
+The knapsack table shows the best value for each item prefix and capacity
+for the same six-item, capacity-15 demo instance used in 2.2, so the
+bottom-right cell is 105. The value rises in steps as items start to fit.
 
 ![0/1 knapsack table heatmap](graphs/knapsack_heatmap.png)
 
@@ -468,32 +616,25 @@ filled.
 The recursion tree for LCS reaches the same (i, j) pair through many orders
 of deletions. The table keeps one value per pair, so each state is computed
 once. The measured call count shows the effect: 6.29 million calls at n=16
-against 256 states. Knapsack and matrix chain have the same property, which
-is why their tables are smaller than their recursion trees.
+against 256 non-trivial states. Knapsack and matrix chain have the same
+property, which is why their tables are smaller than their recursion trees.
 
 <div style="page-break-before: always;"></div>
 
 ### 4.3 Recursive versus DP
 
-The naive recursion is simple and correct but exponential, because it pays
-again for every repeated state. The table version trades memory for time: it
-stores every state, but each state is solved once. Memoization gives the same
-time with recursion plus a cache, at the cost of call overhead. The table
-wins for dense state spaces, where almost every state is reached.
-
-Memory is the price. LCS at n=1200 stores 1.44 million cells and peaks at
-17.8 MB. The one-row knapsack variant shows that the space bound can often be
-reduced when only the final value is needed; LCS can be reduced to two rows
-the same way.
+The naive recursion is exponential because it pays again for every repeated
+state. The table stores each state once, trading memory for time; memoization
+does the same with recursion plus a cache but adds call overhead. The table
+wins for dense state spaces. Memory is the price: LCS at n=1200 stores 1.44
+million cells and peaks at 17,805 KiB, though two rows suffice when only the
+length is needed.
 
 ### 4.4 Applications
 
-- LCS: diff tools, DNA and protein alignment, plagiarism detection and
-  version comparison.
-- 0/1 Knapsack: budget selection, cargo loading, project portfolios and
-  resource planning with indivisible items.
-- Matrix Chain: query plan optimisation in databases, graphics transform
-  pipelines and compiler expression ordering.
+- LCS: diff tools, DNA alignment, plagiarism detection and version comparison.
+- 0/1 Knapsack: budget selection, cargo loading and resource planning.
+- Matrix Chain: database query plans, graphics pipelines and compiler expressions.
 
 ### 4.5 Measured versus theoretical growth
 
@@ -501,14 +642,21 @@ the same way.
 |---|---|---|
 | LCS time, 800 to 1200 | 2.44 | 2.25 (quadratic) |
 | LCS memory, 800 to 1200 | 2.60 | 2.25 (quadratic) |
+| LCS memory, 400 to 800 | 5.37 | 4.00 (quadratic) |
 | Knapsack time, 400 to 800 | 4.33 | 4.00 (quadratic) |
 | Knapsack memory, 400 to 800 | 4.00 | 4.00 (quadratic) |
 | Matrix chain time, 80 to 160 | 7.83 | 8.00 (cubic) |
 | Matrix chain memory, 80 to 160 | 4.02 | 4.00 (quadratic) |
 
-The table sizes follow the bounds closely. Time is slightly above the bound
-at the large LCS sizes, where the table no longer fits in cache and memory
-access dominates the inner loop.
+Memory follows the table, but LCS overshoots at large n. This is not a
+CPU-cache effect: Python caches small ints only (up to 256), so each match
+(`+1`) above that allocates an object that later cells reference. The
+pointer-only estimate is (n+1)^2/128 KiB: 1,256.26 at n=400, 5,012.51 at
+n=800 and 11,268.76 at n=1200. The measured peaks are 1,277.48, 6,860.08 and
+17,805.52 KiB, gaps of 21, 1,847 and 6,537 KiB. The ints explain the gap: at
+n=800, 57,736 ints at 32 bytes is 1,804 KiB, and 801 row headers add about
+44 KiB, giving 1,848 against 1,847. At n=1200 the same arithmetic gives about
+6,535 against 6,537.
 
 <div style="page-break-before: always;"></div>
 
@@ -516,28 +664,37 @@ access dominates the inner loop.
 
 Three dynamic programs were implemented, measured and drawn. LCS runs in
 O(mn), knapsack in O(nC) and matrix chain in O(n^3), and the measured growth
-matches those bounds for time, memory and state count. The table turns an
+matches those bounds for time, memory and state count, apart from LCS memory,
+which overshoots because of int objects. The table turns an
 exponential recursion into a polynomial one: at n=16 the naive LCS makes
-6.29 million calls while the table fills 256 cells, a speedup above 31,000
-times. The cost is memory, which grows with the number of states unless a
+6.29 million calls while the table fills 256 non-trivial cells, a speedup
+above 31,000 times. The cost is memory, which grows with the number of states unless a
 reduced-space variant is used. Dynamic programming is therefore the right
 tool when subproblems repeat and the state space is small enough to store.
 
 ## 6. How to reproduce
 
+The work was done inside the git repository in a virtual environment. The
+capture shows the folder, last commit, interpreter, environment and install.
+
+![terminal: git, virtual environment and dependency install](screenshots/shot_setup.png)
+
 Run from this folder with Python 3 and the packages in `requirements.txt`:
 
 ```bash
+python -m venv .venv --system-site-packages
+source .venv/bin/activate
+pip install -r requirements.txt
 python lcs.py
 python knapsack_dp.py
 python matrix_chain.py
+python app.py
 python run_experiments.py
 python make_plots.py
 ```
 
-`run_experiments.py` rewrites `data/experiments.csv` and
-`data/recursive_vs_dp.csv`; `make_plots.py` reads both and rewrites the six
-figures in `graphs/`. The report tables come from the same CSV files.
+`run_experiments.py` rewrites the two CSVs; `make_plots.py` rewrites the six
+figures in `graphs/`.
 
 Repository:
 https://github.com/Vic-41148/algorithm-efficiency-case-study-aditya-shibu-2401201047

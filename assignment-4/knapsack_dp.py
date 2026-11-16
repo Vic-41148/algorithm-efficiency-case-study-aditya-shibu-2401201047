@@ -6,6 +6,10 @@ O(capacity) space by scanning the capacity backwards.
 """
 import random
 
+DEMO_ITEMS = [("map", 10, 5), ("compass", 40, 4), ("water", 30, 6),
+              ("tent", 50, 9), ("food", 35, 5), ("radio", 25, 3)]
+DEMO_CAPACITY = 15
+
 
 def knapsack_dp(items, capacity):
     """Return (best_value, table, chosen) for whole-item knapsack."""
@@ -46,11 +50,13 @@ def make_items(n, seed=29, max_value=100, max_weight=100):
 
 
 if __name__ == "__main__":
-    items = [("map", 10, 5), ("compass", 40, 4), ("water", 30, 6),
-             ("tent", 50, 9), ("food", 35, 5), ("radio", 25, 3)]
-    capacity = 15
+    items = DEMO_ITEMS
+    capacity = DEMO_CAPACITY
     best, table, chosen = knapsack_dp(items, capacity)
     print(f"capacity={capacity} items={len(items)}")
     print(f"best value={best} chosen={chosen}")
     print(f"one-row check={knapsack_1d(items, capacity)}")
     print(f"table rows={len(table)} cols={len(table[0])}")
+    print("table:")
+    for row in table:
+        print(" ".join(f"{cell:4d}" for cell in row))

@@ -45,5 +45,9 @@ if __name__ == "__main__":
     print(f"dims={dims}")
     print(f"matrices={len(dims) - 1} min cost={best}")
     print(f"order={parenthesize(split, 0, len(dims) - 2)}")
+    print("cost table:")
     for row in cost:
         print(" ".join(f"{cell:8.0f}" for cell in row))
+    print("split table (0-indexed k):")
+    for row in split:
+        print(" ".join(f"{cell:2d}" for cell in row))

@@ -11,7 +11,7 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import numpy as np
 
-from knapsack_dp import knapsack_dp
+from knapsack_dp import DEMO_CAPACITY, DEMO_ITEMS, knapsack_dp
 from lcs import lcs_table
 from matrix_chain import matrix_chain
 
@@ -84,16 +84,15 @@ def plot_lcs_heatmap():
 
 
 def plot_knapsack_heatmap():
-    items = [("map", 10, 5), ("compass", 40, 4), ("water", 30, 6),
-             ("tent", 50, 9), ("food", 35, 5)]
-    capacity = 12
+    items = DEMO_ITEMS
+    capacity = DEMO_CAPACITY
     _, table, _ = knapsack_dp(items, capacity)
     rows = ["-"] + [name for name, _, _ in items]
     cols = [str(room) for room in range(capacity + 1)]
     heatmap(table, rows, cols,
-            "0/1 knapsack table, items by capacity",
+            "0/1 knapsack table for the demo instance",
             "knapsack_heatmap.png", xlabel="Capacity",
-            ylabel="Items considered", height=3.8)
+            ylabel="Items considered", height=4.8)
 
 
 def plot_mcm_heatmap():
